@@ -7,6 +7,7 @@
 #include <string.h>
 
 #include "calendar.h"
+#include "cmd.h"
 #include "fastmath.h"
 #include "fmt.h"
 
@@ -154,12 +155,60 @@ static void test_fastmath(void)
 	printf("fastmath worst atan2 error %.4f deg, sqrt relative %.2e\n", worst_angle, worst_sqrt);
 }
 
+static void test_cmd(void)
+{
+	cmd_t c;
+
+	c = cmd_parse("TIME 07:05:09");
+	CHECK(c.type == CMD_TIME && c.a == 7 && c.b == 5 && c.c == 9);
+	c = cmd_parse("time 23:59");
+	CHECK(c.type == CMD_TIME && c.a == 23 && c.b == 59 && c.c == 0);
+	c = cmd_parse("TIME 24:00");
+	CHECK(c.type == CMD_BAD);
+	c = cmd_parse("TIME 12:60");
+	CHECK(c.type == CMD_BAD);
+	c = cmd_parse("TIMEX 12:00");
+	CHECK(c.type == CMD_BAD);
+
+	c = cmd_parse("DATE 2026-11-21");
+	CHECK(c.type == CMD_DATE && c.a == 2026 && c.b == 11 && c.c == 21);
+	c = cmd_parse("DATE 2026-02-29");
+	CHECK(c.type == CMD_BAD);
+	c = cmd_parse("DATE 2024-02-29");
+	CHECK(c.type == CMD_DATE);
+	c = cmd_parse("DATE 1999-01-01");
+	CHECK(c.type == CMD_BAD);
+
+	c = cmd_parse("ALARM 06:45");
+	CHECK(c.type == CMD_ALARM_SET && c.a == 6 && c.b == 45);
+	CHECK(cmd_parse("alarm on").type == CMD_ALARM_ON);
+	CHECK(cmd_parse("ALARM OFF").type == CMD_ALARM_OFF);
+	CHECK(cmd_parse("ALARM 25:00").type == CMD_BAD);
+	CHECK(cmd_parse("ALARM ON now").type == CMD_BAD);
+
+	CHECK(cmd_parse("VIB ON").type == CMD_VIB_ON);
+	CHECK(cmd_parse("VIB OFF").type == CMD_VIB_OFF);
+	CHECK(cmd_parse("VIB TEST").type == CMD_VIB_TEST);
+	CHECK(cmd_parse("VIB").type == CMD_BAD);
+	CHECK(cmd_parse("BEEP TEST").type == CMD_BEEP_TEST);
+	CHECK(cmd_parse("  status  ").type == CMD_STATUS);
+	CHECK(cmd_parse("IMGW").type == CMD_IMGW);
+
+	/* 模块回显的 OK 和 ERR 不能触发回复 */
+	CHECK(cmd_parse("OK").type == CMD_NONE);
+	CHECK(cmd_parse("ERR").type == CMD_NONE);
+	CHECK(cmd_parse("").type == CMD_NONE);
+	CHECK(cmd_parse("   ").type == CMD_NONE);
+	CHECK(cmd_parse("HELLO").type == CMD_BAD);
+}
+
 int main(void)
 {
 	test_calendar();
 	test_build_time();
 	test_fmt();
 	test_fastmath();
+	test_cmd();
 	if (failures) {
 		printf("%d failure(s)\n", failures);
 		return 1;
