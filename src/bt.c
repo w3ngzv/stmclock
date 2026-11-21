@@ -37,7 +37,6 @@
 static uint8_t rx_ring[RX_RING];
 static volatile uint16_t rx_head;   /* 只由中断写 */
 static uint16_t rx_tail;            /* 只由主循环写 */
-static uint32_t rx_total;
 
 static char line[LINE_MAX];
 static unsigned line_len;
@@ -78,11 +77,6 @@ void bt_init(void)
 	nvic_enable(USART2_IRQ);
 }
 
-uint32_t bt_rx_bytes(void)
-{
-	return rx_total;
-}
-
 static void put_str(const char *s)
 {
 	for (; *s; s++) {
@@ -100,7 +94,6 @@ static int rx_pop(void)
 		return -1;
 	b = rx_ring[rx_tail];
 	rx_tail = (uint16_t)((rx_tail + 1u) & (RX_RING - 1u));
-	rx_total++;
 	return b;
 }
 

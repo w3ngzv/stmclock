@@ -9,7 +9,6 @@
 /* 返回 JEDEC ID 的 24 位值, 总线上没有芯片时为 0xFFFFFF 或 0 */
 uint32_t w25q_init(void);
 int w25q_present(void);
-uint32_t w25q_id(void);
 int w25q_read(uint32_t addr, uint8_t *buf, unsigned len);
 /* 擦除 addr 所在的 4 KB 扇区, 返回 0 成功, -1 超时 */
 int w25q_erase_sector(uint32_t addr);

@@ -2,7 +2,6 @@
 #include "input.h"
 
 uint32_t g_sysclk_hz = 8000000u;
-int g_clock_hse;
 volatile uint32_t g_ms;
 
 #define SYST_CTRL   REG32(0xE000E010u)
@@ -61,7 +60,6 @@ static void clock_init(void)
 			;
 		g_sysclk_hz = hse_ok ? HSE_MHZ * PLL_MUL_HSE * 1000000u
 				     : 4u * PLL_MUL_HSI * 1000000u;
-		g_clock_hse = hse_ok;
 	}
 	/* PLL 没有锁定时留在复位默认的 8 MHz HSI 上, 速度降低但功能可用 */
 }

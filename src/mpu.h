@@ -14,7 +14,6 @@ typedef struct {
 /* 返回 WHO_AM_I 的值, 总线无应答时返回 -1 */
 int mpu_init(void);
 int mpu_present(void);
-int mpu_who_am_i(void);
 /* 至少每 10 ms 调用一次, 内部按间隔限速 */
 void mpu_update(void);
 void mpu_calibrate_gyro(void);

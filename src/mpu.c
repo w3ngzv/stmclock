@@ -12,7 +12,7 @@
  * 清单里的是 MPU6500, 它的寄存器手册没有取得: TDK 官网上该 PDF 的地址现在
  * 返回的是网页. 6050 的 WHO_AM_I 默认值为 0x68 (手册 4.34). 6500 为 0x70
  * 来自 TDK 论坛的回复, 不是手册, 没有核对. 所以驱动不按 ID 拒绝, 读到的值
- * 由 mpu_who_am_i() 返回, 接线调试时可以显示出来核对.
+ * 作为 mpu_init() 的返回值, 接线调试时可以显示出来核对.
  */
 #define MPU_ADDR        0x68u
 #define REG_CONFIG      0x1Au
@@ -108,7 +108,6 @@ int mpu_init(void)
 }
 
 int mpu_present(void) { return present; }
-int mpu_who_am_i(void) { return who_am_i; }
 
 /* TODO: 校准要求模块静止, 没有检测校准过程中是否被移动 */
 void mpu_calibrate_gyro(void)

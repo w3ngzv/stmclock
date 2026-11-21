@@ -5,7 +5,6 @@
 #include "board.h"
 
 extern uint32_t g_sysclk_hz;
-extern int g_clock_hse;         /* 1: HSE 经 PLL 到 72 MHz, 0: 回退到 HSI */
 extern volatile uint32_t g_ms;  /* SysTick 累加的毫秒数, 约 49 天回绕 */
 
 void sys_init(void);

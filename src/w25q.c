@@ -111,7 +111,6 @@ uint32_t w25q_init(void)
 }
 
 int w25q_present(void) { return present; }
-uint32_t w25q_id(void) { return jedec_id; }
 
 int w25q_read(uint32_t addr, uint8_t *buf, unsigned len)
 {
