@@ -27,7 +27,7 @@ void i2c_init(void)
 {
 	unsigned i;
 
-	/* TODO: SCL 频率只是按周期数估算, 没有逻辑分析仪实测, 本机没有硬件 */
+	/* TODO: SCL 频率按循环周期数估算, 还没有用逻辑分析仪或示波器测过 */
 	half_period_loops = g_sysclk_hz / (2u * I2C_TARGET_HZ * I2C_LOOP_CYCLES);
 	if (half_period_loops == 0)
 		half_period_loops = 1;

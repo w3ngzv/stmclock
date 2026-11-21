@@ -10,15 +10,14 @@
  * 没有引入 ST 的头文件, 寄存器地址在这里手写, 依据的文档如下. 其他源文件
  * 的注释用简称引用章节号.
  *
- *   RM0008   /Users/kernelkraze/Documents/projects/Leonix/Documentation/references/
- *            STM32F10xxx-RM0008-rev15.pdf
- *   PM0056   同目录 STM32-Cortex-M3-PM0056-rev5.pdf
- *   DS5319   同目录 STM32F103x8B-datasheet-DS5319-rev20.pdf
- *   UM10204  同目录 UM10204-I2C-NXP.pdf
- *   SSD1306  .dev/docs/ssd1306-datasheet.pdf (cdn-shop.adafruit.com/datasheets/SSD1306.pdf)
- *   W25Q80DV .dev/docs/w25q80dv-datasheet.pdf (winbond.com, Rev H 2015-10-02)
- *   MPU60X0  .dev/docs/mpu6050-register-map.pdf (RM-MPU-6000A, cdn.sparkfun.com)
- *   SG90     .dev/docs/sg90-datasheet.pdf
+ *   RM0008   STM32F10xxx 参考手册 Rev 15 (st.com)
+ *   PM0056   STM32F10xxx Cortex-M3 编程手册 Rev 5 (st.com)
+ *   DS5319   STM32F103x8/xB 数据手册 Rev 20 (st.com)
+ *   UM10204  NXP I2C 总线规范 Rev. 7.0 (nxp.com)
+ *   SSD1306  cdn-shop.adafruit.com/datasheets/SSD1306.pdf
+ *   W25Q80DV 数据手册 Rev H 2015-10-02 (winbond.com)
+ *   MPU60X0  RM-MPU-6000A 寄存器手册 (cdn.sparkfun.com)
+ *   SG90     TowerPro SG90 数据手册
  *
  * 清单里的陀螺仪是 MPU6500, 它的寄存器手册没有取得, 见 mpu.c 开头.
  */

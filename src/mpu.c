@@ -11,8 +11,8 @@
  *
  * 清单里的是 MPU6500, 它的寄存器手册没有取得: TDK 官网上该 PDF 的地址现在
  * 返回的是网页. 6050 的 WHO_AM_I 默认值为 0x68 (手册 4.34). 6500 为 0x70
- * 来自 TDK 论坛的回复, 不是手册, 没有核对. 所以驱动不按 ID 拒绝, 只把读到
- * 的值显示在系统页.
+ * 来自 TDK 论坛的回复, 不是手册, 没有核对. 所以驱动不按 ID 拒绝, 读到的值
+ * 由 mpu_who_am_i() 返回, 接线调试时可以显示出来核对.
  */
 #define MPU_ADDR        0x68u
 #define REG_CONFIG      0x1Au
@@ -156,8 +156,8 @@ void mpu_update(void)
 
 	/*
 	 * 轴向约定: x 向前, y 向左, z 向上, 模块水平放置时 az 约为 +1 g.
-	 * TODO: 模块在面包板上的朝向没有确认, 角度正负与实际倾斜方向相反时
-	 * 调换这里的符号. 本机没有模块, 未验证.
+	 * TODO: 模块在面包板上的朝向未定. 装好后把板子向前和向右各倾斜一次,
+	 * 显示的角度正负与实际方向相反时, 调换这里 acc 和下面 gyro 的符号.
 	 */
 	roll_acc = fm_atan2_deg(acc[1], acc[2]);
 	pitch_acc = fm_atan2_deg(-acc[0], fm_sqrt(acc[1] * acc[1] + acc[2] * acc[2]));
@@ -177,7 +177,8 @@ void mpu_update(void)
 	/*
 	 * 计步: 合加速度先降到 STEP_ARM_G 以下才允许触发, 再升过 STEP_TRIGGER_G
 	 * 计一步, 两步之间至少间隔 STEP_MIN_GAP_MS.
-	 * TODO: 阈值是估计值, 没有佩戴行走的数据, 需要朋友实测后调整.
+	 * TODO: 阈值是估计值, 没有行走时的实测数据. 拿着板子走 20 步, 计数偏多
+	 * 时调高 STEP_TRIGGER_G, 偏少时调低.
 	 */
 	if (mag < STEP_ARM_G)
 		step_armed = 1;

@@ -56,7 +56,8 @@ void oled_init(void)
 {
 	/*
 	 * 模块出厂地址通常是 0x3C, 个别焊接电阻后为 0x3D. 先试 0x3C 再试 0x3D.
-	 * TODO: 屏幕上下颠倒时把 0xA1/0xC8 改成 0xA0/0xC0; 本机没有屏幕, 未验证.
+	 * TODO: 屏幕方向没有在实物上确认. 上下颠倒时把 init_seq 中的 0xA1/0xC8
+	 * 改成 0xA0/0xC0.
 	 */
 	oled_addr = OLED_ADDR_PRIMARY;
 	g_oled_present = send_cmds(init_seq, sizeof(init_seq));
