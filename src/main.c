@@ -1,3 +1,4 @@
+#include "actuators.h"
 #include "app.h"
 #include "i2c.h"
 #include "input.h"
@@ -21,10 +22,12 @@ int main(void)
 	mpu_init();
 	w25q_init();
 	watch_init();
+	actuators_init();
 	app_init();
 
 	for (;;) {
 		mpu_update();
+		actuators_update();
 		if (watch_tick()) {
 			/* 板载 LED 低电平点亮, 每秒翻转一次表示主循环在运行 */
 			gpio_write(LED_PORT, LED_PIN, g_now.sec & 1u);
