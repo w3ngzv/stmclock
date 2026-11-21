@@ -1,4 +1,5 @@
 #include "actuators.h"
+#include "alarm.h"
 #include "app.h"
 #include "bt.h"
 #include "i2c.h"
@@ -28,8 +29,17 @@ int main(void)
 	app_init();
 
 	for (;;) {
+		static int was_ringing;
+		int ringing;
+
 		mpu_update();
 		bt_poll();
+		alarm_poll(&g_now, g_ms);
+		ringing = alarm_ringing();
+		if (ringing != was_ringing) {
+			actuators_ring(ringing, g_alarm.vibrate);
+			was_ringing = ringing;
+		}
 		actuators_update();
 		if (watch_tick()) {
 			/* 板载 LED 低电平点亮, 每秒翻转一次表示主循环在运行 */

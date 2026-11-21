@@ -23,6 +23,7 @@ extern const page_t page_stopwatch;
 extern const page_t page_torch;
 extern const page_t page_motion;
 extern const page_t page_picture;
+extern const page_t page_alarm;
 
 void app_init(void);
 void app_goto(const page_t *page);

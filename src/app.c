@@ -1,4 +1,7 @@
+#include "alarm.h"
 #include "app.h"
+#include "fmt.h"
+#include "watch.h"
 #include "input.h"
 #include "oled.h"
 
@@ -20,6 +23,7 @@ static const page_t *const menu_items[] = {
 	&page_torch,
 	&page_motion,
 	&page_picture,
+	&page_alarm,
 };
 #define MENU_COUNT ((int)(sizeof(menu_items) / sizeof(menu_items[0])))
 
@@ -48,11 +52,33 @@ void app_menu(void)
 
 int app_keep_awake(void)
 {
-	return current->keep_awake;
+	return current->keep_awake || alarm_ringing();
+}
+
+static void ring_screen(const input_state_t *in)
+{
+	char line[8];
+	char *p;
+
+	if (in->keys || in->enc || in->longs)
+		alarm_stop();
+
+	p = fmt_dec(line, g_now.hour, 2);
+	*p++ = ':';
+	p = fmt_dec(p, g_now.min, 2);
+	*p = 0;
+	gfx_clear();
+	gfx_text_center(OLED_WIDTH / 2, 8, "ALARM", 2, 1);
+	gfx_text_center(OLED_WIDTH / 2, 30, line, 3, 1);
+	gfx_text_center(OLED_WIDTH / 2, 56, "ANY KEY: STOP", 1, 1);
 }
 
 void app_update(const input_state_t *in)
 {
+	if (alarm_ringing()) {
+		ring_screen(in);
+		return;
+	}
 	if (in->longs & KEYM(KEY_ENC)) {
 		if (current != &page_clock)
 			app_goto(&page_clock);
