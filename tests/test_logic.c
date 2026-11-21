@@ -2,10 +2,12 @@
  * 主机上运行的单元测试, 只覆盖不依赖寄存器的纯逻辑.
  * 用法: make test
  */
+#include <math.h>
 #include <stdio.h>
 #include <string.h>
 
 #include "calendar.h"
+#include "fastmath.h"
 #include "fmt.h"
 
 static int failures;
@@ -115,11 +117,49 @@ static void test_fmt(void)
 	CHECK_STR(buf, "EF4014");
 }
 
+static void test_fastmath(void)
+{
+	double worst_angle = 0.0, worst_sqrt = 0.0;
+	int xi, yi;
+	float v;
+
+	for (yi = -20; yi <= 20; yi++) {
+		for (xi = -20; xi <= 20; xi++) {
+			double want, got, err;
+
+			if (xi == 0 && yi == 0)
+				continue;
+			want = atan2((double)yi, (double)xi) * 180.0 / M_PI;
+			got = (double)fm_atan2_deg((float)yi, (float)xi);
+			err = fabs(want - got);
+			if (err > 180.0)
+				err = 360.0 - err; /* +-180 度处的等价角 */
+			if (err > worst_angle)
+				worst_angle = err;
+		}
+	}
+	/* 近似公式的最大误差约 0.09 度 */
+	CHECK(worst_angle < 0.15);
+
+	for (v = 0.001f; v < 100000.0f; v *= 1.37f) {
+		double rel = fabs((double)fm_sqrt(v) - sqrt((double)v)) / sqrt((double)v);
+
+		if (rel > worst_sqrt)
+			worst_sqrt = rel;
+	}
+	CHECK(worst_sqrt < 1e-5);
+	CHECK(fm_sqrt(0.0f) == 0.0f);
+	CHECK(fm_sqrt(-4.0f) == 0.0f);
+	CHECK(fm_atan2_deg(0.0f, 0.0f) == 0.0f);
+	printf("fastmath worst atan2 error %.4f deg, sqrt relative %.2e\n", worst_angle, worst_sqrt);
+}
+
 int main(void)
 {
 	test_calendar();
 	test_build_time();
 	test_fmt();
+	test_fastmath();
 	if (failures) {
 		printf("%d failure(s)\n", failures);
 		return 1;

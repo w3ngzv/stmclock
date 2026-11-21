@@ -18,6 +18,7 @@ static const page_t *const menu_items[] = {
 	&page_settime,
 	&page_stopwatch,
 	&page_torch,
+	&page_motion,
 };
 #define MENU_COUNT ((int)(sizeof(menu_items) / sizeof(menu_items[0])))
 

@@ -1,6 +1,7 @@
 #include "app.h"
 #include "i2c.h"
 #include "input.h"
+#include "mpu.h"
 #include "oled.h"
 #include "sys.h"
 #include "watch.h"
@@ -16,10 +17,12 @@ int main(void)
 	input_init();
 	i2c_init();
 	oled_init();
+	mpu_init();
 	watch_init();
 	app_init();
 
 	for (;;) {
+		mpu_update();
 		if (watch_tick()) {
 			/* 板载 LED 低电平点亮, 每秒翻转一次表示主循环在运行 */
 			gpio_write(LED_PORT, LED_PIN, g_now.sec & 1u);
