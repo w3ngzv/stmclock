@@ -4,6 +4,7 @@
 #include "mpu.h"
 #include "oled.h"
 #include "sys.h"
+#include "w25q.h"
 #include "watch.h"
 
 #define FRAME_MS 50u
@@ -18,6 +19,7 @@ int main(void)
 	i2c_init();
 	oled_init();
 	mpu_init();
+	w25q_init();
 	watch_init();
 	app_init();
 
