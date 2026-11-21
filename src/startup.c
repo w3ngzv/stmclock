@@ -4,6 +4,7 @@ extern uint32_t _sidata, _sdata, _edata, _sbss, _ebss, _estack;
 
 int main(void);
 void reset_handler(void);
+void systick_handler(void);
 
 /* A fault before the clock tree is set up has nothing useful to report. */
 static void default_handler(void)
@@ -28,7 +29,7 @@ static void (*const vector_table[16])(void) = {
 	default_handler, /* DebugMon */
 	0,
 	default_handler, /* PendSV */
-	default_handler, /* SysTick */
+	systick_handler,
 };
 
 void reset_handler(void)
