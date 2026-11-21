@@ -1,5 +1,6 @@
 #include "actuators.h"
 #include "app.h"
+#include "bt.h"
 #include "i2c.h"
 #include "input.h"
 #include "mpu.h"
@@ -23,10 +24,12 @@ int main(void)
 	w25q_init();
 	watch_init();
 	actuators_init();
+	bt_init();
 	app_init();
 
 	for (;;) {
 		mpu_update();
+		bt_poll();
 		actuators_update();
 		if (watch_tick()) {
 			/* 板载 LED 低电平点亮, 每秒翻转一次表示主循环在运行 */
