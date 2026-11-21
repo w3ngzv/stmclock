@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "alarm.h"
 #include "calendar.h"
 #include "cmd.h"
 #include "fastmath.h"
@@ -202,6 +203,53 @@ static void test_cmd(void)
 	CHECK(cmd_parse("HELLO").type == CMD_BAD);
 }
 
+static void test_alarm(void)
+{
+	datetime_t t = { 2026, 11, 21, 7, 29, 59 };
+	uint32_t ms = 1000;
+
+	g_alarm.hour = 7;
+	g_alarm.min = 30;
+	g_alarm.enabled = 1;
+
+	alarm_poll(&t, ms);
+	CHECK(!alarm_ringing());
+
+	t.min = 30;
+	t.sec = 0;
+	alarm_poll(&t, ms);
+	CHECK(alarm_ringing());
+
+	/* 按停后同一分钟内不再响 */
+	alarm_stop();
+	t.sec = 30;
+	alarm_poll(&t, ms + 30000);
+	CHECK(!alarm_ringing());
+
+	/* 第二天同一时刻再次响 */
+	t.day = 22;
+	t.min = 31;
+	alarm_poll(&t, ms + 60000);
+	t.min = 30;
+	t.sec = 0;
+	alarm_poll(&t, ms + 86400000u);
+	CHECK(alarm_ringing());
+
+	/* 没人理会时 60 秒后自动停止 */
+	alarm_poll(&t, ms + 86400000u + 59999u);
+	CHECK(alarm_ringing());
+	alarm_poll(&t, ms + 86400000u + 60000u);
+	CHECK(!alarm_ringing());
+
+	/* 关闭闹钟后不响 */
+	g_alarm.enabled = 0;
+	t.min = 31;
+	alarm_poll(&t, ms + 90000000u);
+	t.min = 30;
+	alarm_poll(&t, ms + 100000000u);
+	CHECK(!alarm_ringing());
+}
+
 int main(void)
 {
 	test_calendar();
@@ -209,6 +257,7 @@ int main(void)
 	test_fmt();
 	test_fastmath();
 	test_cmd();
+	test_alarm();
 	if (failures) {
 		printf("%d failure(s)\n", failures);
 		return 1;

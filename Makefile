@@ -40,7 +40,7 @@ flash: build/stmclock.elf
 
 # 主机上的单元测试, 只编译不依赖寄存器的源文件
 HOST_CC ?= cc
-TEST_SRCS := src/calendar.c src/fmt.c src/fastmath.c src/cmd.c
+TEST_SRCS := src/calendar.c src/fmt.c src/fastmath.c src/cmd.c src/alarm.c
 
 test: tests/test_logic.c $(TEST_SRCS) | build
 	$(HOST_CC) -std=gnu11 -Wall -Wextra -Werror -Isrc -o build/test_logic $^ -lm
