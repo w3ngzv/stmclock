@@ -44,7 +44,18 @@ PA11/PA12 (USB), PC14/PC15 (32.768 kHz 晶振).
   已在板上验证: 时钟、PC13 闪烁、SysTick 计时、USART2 寄存器配置、TIM3 PWM、
   PB1 电平.
   未验证, 没有实物: OLED, MPU6500, W25Q, 编码器, 按键, 舵机, 蜂鸣器, 蓝牙模块.
-  PA4 到 PA7 的传感器尚未实现, 接线表里只是预留.
+
+留给你做的部分
+
+  以下三处故意没有写完, 做法和验收方法写在对应位置的 TODO(练习) 注释里.
+  用 grep -rn 'TODO(练习' src 可以全部找到.
+
+  秒表计时逻辑        src/page_stopwatch.c   显示已写好, 计时和按键要补
+  传感器              src/page_sensor.c      考核第 11 项, ADC 驱动要新写
+  自动熄屏和光感亮屏  src/main.c             依赖传感器部分
+
+  考核里的加分项 (小游戏等) 没有做. 编码器加 OLED 已经够做一个简单的游戏,
+  新页面照 page_torch.c 的结构写, 再加进 app.c 的 menu_items.
 
 编译和烧录
 

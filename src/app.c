@@ -24,6 +24,7 @@ static const page_t *const menu_items[] = {
 	&page_motion,
 	&page_picture,
 	&page_alarm,
+	&page_sensor,
 };
 #define MENU_COUNT ((int)(sizeof(menu_items) / sizeof(menu_items[0])))
 
