@@ -14,7 +14,7 @@ int calendar_days_in_month(int year, int month)
 	return month_days[month - 1];
 }
 
-/* Sakamoto 算法, 对公历全年份成立 */
+/* Sakamoto 算法. tests/test_logic.c 用 3 个已知日期的星期核对过 */
 int calendar_weekday(int year, int month, int day)
 {
 	static const uint8_t offset[12] = { 0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4 };

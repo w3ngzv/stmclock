@@ -53,7 +53,6 @@ static void step_field(int delta)
 		edit.day = (uint8_t)calendar_days_in_month(edit.year, edit.month);
 }
 
-/* 字段在文本行内的起始字符序号与长度, 日期行和时间行各 3 个字段 */
 static const struct { uint8_t row, start, len; } field_pos[F_COUNT] = {
 	[F_YEAR]  = { 0, 0, 4 },
 	[F_MONTH] = { 0, 5, 2 },

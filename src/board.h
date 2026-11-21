@@ -7,8 +7,20 @@
 #define REG16(addr) (*(volatile uint16_t *)(addr))
 
 /*
- * 基址与寄存器偏移取自 RM0008 (STM32F101xx/102xx/103xx 参考手册).
- * 没有引入 ST 的头文件, 工程只依赖 arm-none-eabi-gcc.
+ * 没有引入 ST 的头文件, 寄存器地址在这里手写, 依据的文档如下. 其他源文件
+ * 的注释用简称引用章节号.
+ *
+ *   RM0008   /Users/kernelkraze/Documents/projects/Leonix/Documentation/references/
+ *            STM32F10xxx-RM0008-rev15.pdf
+ *   PM0056   同目录 STM32-Cortex-M3-PM0056-rev5.pdf
+ *   DS5319   同目录 STM32F103x8B-datasheet-DS5319-rev20.pdf
+ *   UM10204  同目录 UM10204-I2C-NXP.pdf
+ *   SSD1306  .dev/docs/ssd1306-datasheet.pdf (cdn-shop.adafruit.com/datasheets/SSD1306.pdf)
+ *   W25Q80DV .dev/docs/w25q80dv-datasheet.pdf (winbond.com, Rev H 2015-10-02)
+ *   MPU60X0  .dev/docs/mpu6050-register-map.pdf (RM-MPU-6000A, cdn.sparkfun.com)
+ *   SG90     .dev/docs/sg90-datasheet.pdf
+ *
+ * 清单里的陀螺仪是 MPU6500, 它的寄存器手册没有取得, 见 mpu.c 开头.
  */
 #define RCC_BASE        0x40021000u
 #define RCC_CR          REG32(RCC_BASE + 0x00u)

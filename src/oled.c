@@ -2,8 +2,9 @@
 #include "i2c.h"
 
 /*
- * SSD1306, 128x64, I2C. 控制字节 0x00 之后的字节按命令解释, 0x40 之后按
- * 显存数据解释. 显存按页组织: 每页 8 行, 字节内低位在上.
+ * SSD1306, 128x64, I2C. 从机地址为 0111100 加 SA0 位, 即 0x3C 或 0x3D
+ * (SSD1306 8.1.5). 控制字节 0x00 之后的字节按命令解释, 0x40 之后按显存
+ * 数据解释 (8.1.5.2). 显存按页组织: 每页 8 行, 字节内低位在上 (8.7 GDDRAM).
  */
 #define OLED_ADDR_PRIMARY   0x3Cu
 #define OLED_ADDR_SECONDARY 0x3Du
@@ -14,6 +15,11 @@ int g_oled_present;
 static uint8_t oled_addr = OLED_ADDR_PRIMARY;
 static uint8_t framebuf[OLED_BUF_SIZE];
 
+/*
+ * 各命令的含义见 SSD1306 第 10 节. 电荷泵 8Dh, 14h 以及上电次序来自同一个
+ * PDF 末尾 App Note 的 Charge Pump Command Table 和 Figure 2
+ * (Software Initialization Flow Chart): 电荷泵必须在 AFh 开显示之前使能.
+ */
 static const uint8_t init_seq[] = {
 	0xAE,             /* 关显示 */
 	0xD5, 0x80,       /* 时钟分频 */

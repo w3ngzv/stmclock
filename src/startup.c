@@ -6,15 +6,17 @@ int main(void);
 void reset_handler(void);
 void systick_handler(void);
 
-/* A fault before the clock tree is set up has nothing useful to report. */
+/* 时钟树建立之前的异常没有可报告的内容, 原地停住便于调试器查看 */
 static void default_handler(void)
 {
 	for (;;)
 		;
 }
 
-/* Core exceptions only, RM0008 Table 63 positions 0 to 15. IRQ entries are
- * added together with the driver that enables them. */
+/*
+ * 前 16 项是栈顶和内核异常, 顺序见 PM0056 2.3.2 Table 16. 外设中断从第 16
+ * 项起, 序号见 RM0008 Table 63. 外设中断项随各自的驱动加入.
+ */
 __attribute__((section(".vectors"), used))
 static void (*const vector_table[16])(void) = {
 	(void (*)(void))&_estack,

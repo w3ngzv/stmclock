@@ -40,11 +40,14 @@ void input_init(void)
 	gpio_config_pullup(ENC_PORT, ENC_A_PIN);
 	gpio_config_pullup(ENC_PORT, ENC_B_PIN);
 
+	/*
+	 * 编码器接口模式见 RM0008 15.3.12. SMCR 的 SMS=011 是 TI1 和 TI2 两路
+	 * 边沿都计数 (15.4.3). CCMR1 的 CC1S/CC2S=01 把通道接到 TI1/TI2, IC1F/IC2F
+	 * 是输入滤波, 用来抑制机械触点抖动 (15.4.7).
+	 */
 	RCC_APB1ENR |= RCC_APB1_TIM2;
-	(void)RCC_APB1ENR;
-	TIM_SMCR(TIM2_BASE) = 3;                       /* 编码器模式 3, 两路都计数 */
-	TIM_CCMR1(TIM2_BASE) = (1u << 0) | (1u << 8) | /* CC1S, CC2S 选 TI1, TI2 */
-			       (0x8u << 4) | (0x8u << 12); /* 输入滤波, 抑制触点抖动 */
+	TIM_SMCR(TIM2_BASE) = 3;
+	TIM_CCMR1(TIM2_BASE) = (1u << 0) | (1u << 8) | (0x8u << 4) | (0x8u << 12);
 	TIM_ARR(TIM2_BASE) = 0xFFFF;
 	TIM_CR1(TIM2_BASE) = 1;
 	enc_last = TIM_CNT(TIM2_BASE);

@@ -2,11 +2,11 @@
 #include "sys.h"
 
 /*
- * 软件 I2C. 引脚配成开漏输出, 写 1 即释放总线, 由外部上拉拉高, 读 IDR
- * 得到总线电平. 没有处理时钟延展, OLED 和 MPU6500 都不会拉住 SCL.
+ * 软件 I2C. 引脚为开漏输出, 写 1 即释放总线, 由外部上拉拉高 (RM0008 9.1.8,
+ * Table 20). 没有处理时钟延展, SSD1306 和 MPU6500 不会拉住 SCL.
  */
-#define I2C_TARGET_HZ   400000u
-#define I2C_LOOP_CYCLES 5u      /* 空循环每次约 5 个周期, 未用逻辑分析仪核对 */
+#define I2C_TARGET_HZ   400000u   /* 快速模式上限, UM10204 Table 11 */
+#define I2C_LOOP_CYCLES 5u        /* 空循环每次约 5 个周期, 估计值 */
 #define RECOVER_CLOCKS  9u
 
 static uint32_t half_period_loops = 1;
@@ -27,7 +27,7 @@ void i2c_init(void)
 {
 	unsigned i;
 
-	/* 单次半周期约 1/(2*400k) 秒. TODO: 用逻辑分析仪实测 SCL 频率, 本机没有硬件 */
+	/* TODO: SCL 频率只是按周期数估算, 没有逻辑分析仪实测, 本机没有硬件 */
 	half_period_loops = g_sysclk_hz / (2u * I2C_TARGET_HZ * I2C_LOOP_CYCLES);
 	if (half_period_loops == 0)
 		half_period_loops = 1;
@@ -38,8 +38,8 @@ void i2c_init(void)
 	sda(1);
 
 	/*
-	 * 复位发生在从机传输中途时, 从机可能一直拉低 SDA. 补 9 个时钟让它
-	 * 把当前字节移完, 再发 STOP.
+	 * 单片机在从机传输中途复位时, 从机可能一直拉低 SDA. 按 UM10204 3.1.16
+	 * (Bus clear) 发最多 9 个时钟让它释放, 再发 STOP.
 	 */
 	for (i = 0; i < RECOVER_CLOCKS && !sda_read(); i++) {
 		scl(0);
@@ -50,6 +50,7 @@ void i2c_init(void)
 	i2c_stop();
 }
 
+/* START: SCL 为高时 SDA 由高变低. STOP: SCL 为高时 SDA 由低变高, UM10204 3.1.4 */
 void i2c_start(void)
 {
 	sda(1);
@@ -70,6 +71,11 @@ void i2c_stop(void)
 	delay_half();
 }
 
+/*
+ * 第 9 个时钟上从机拉低 SDA 表示 ACK (UM10204 3.1.6).
+ * 总线浮空 (没接从机, 无上拉) 时 SDA 常读成低, 会被误判为 ACK,
+ * 所以调用方不能只靠 ACK 判断从机存在, 还要核对读回的内容.
+ */
 int i2c_put(uint8_t byte)
 {
 	int ack;
@@ -82,7 +88,7 @@ int i2c_put(uint8_t byte)
 		delay_half();
 		scl(0);
 	}
-	sda(1); /* 释放 SDA, 第 9 个时钟读应答 */
+	sda(1);
 	delay_half();
 	scl(1);
 	delay_half();
@@ -132,7 +138,7 @@ int i2c_read_regs(uint8_t addr7, uint8_t reg, uint8_t *buf, unsigned len)
 		i2c_stop();
 		return -1;
 	}
-	i2c_start(); /* 重复起始 */
+	i2c_start();
 	if (!i2c_put((uint8_t)((addr7 << 1) | 1u))) {
 		i2c_stop();
 		return -1;

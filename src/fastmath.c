@@ -12,8 +12,9 @@ float fm_abs(float x)
 }
 
 /*
- * 用整数运算给出平方根的初值 (相对误差约 3.5 %), 再做两次牛顿迭代,
- * 相对误差降到 1e-6 量级. 初值技巧见 Lomont 2003 "Fast Inverse Square Root".
+ * 用整数运算给出平方根的初值 (相对误差约 3.5 %), 再做两次牛顿迭代.
+ * 初值技巧我记得出自 Lomont 2003 "Fast Inverse Square Root", 没有取得原文,
+ * 精度以 tests/test_logic.c 对照 libm 的实测为准.
  */
 float fm_sqrt(float x)
 {
@@ -32,8 +33,8 @@ float fm_sqrt(float x)
 }
 
 /*
- * |z| <= 1 的反正切, 弧度. 二次修正的多项式逼近 (Rajan 等 2006),
- * 最大误差约 0.0015 弧度, 即 0.09 度.
+ * |z| <= 1 的反正切, 弧度. 多项式系数我记得出自 Rajan 等 2006 的反正切
+ * 近似论文, 没有取得原文, 精度以 tests/test_logic.c 的实测为准.
  */
 static float atan_unit(float z)
 {
